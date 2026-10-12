@@ -27,7 +27,7 @@ export function scoped(supabase: SupabaseClient, table: string, userId: string, 
   };
 
   return {
-    select: (columns = '*', options?: { count?: 'exact' }) =>
+    select: (columns = '*', options?: { count?: 'exact'; head?: boolean }) =>
       supabase.from(table).select(columns, options).eq(ownerColumn, userId),
 
     insert: (values: Row | Row[]) =>

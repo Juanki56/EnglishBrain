@@ -194,6 +194,25 @@ begin
                    || case when v_int = 2 then 'PASS' else 'FAIL (' || v_int || ' en vez de 2)' end);
 
     -- -------------------------------------------------------------------------
+    -- Actividad diaria (003): base de la racha y del mapa de calor.
+    -- A tiene zona America/Bogota (UTC−5).
+    -- -------------------------------------------------------------------------
+    select coalesce(sum(vocabulary_count), 0), coalesce(sum(checkin_count), 0)
+      into v_int, v_int2
+      from public.daily_activity where user_id = ua;
+    res := res || ('daily_activity cuenta el vocabulario y los check-ins de A|'
+                   || case when v_int = (select count(*) from public.vocabulary where user_id = ua) and v_int2 = 1
+                           then 'PASS' else 'FAIL' end);
+
+    -- 03:30 UTC del 10 de enero = 22:30 del 9 de enero en Bogotá.
+    insert into public.review_events (user_id, item_type, item_id, grade, reviewed_at)
+    values (ua, 'writing', w_id, 3, '2026-01-10 03:30:00+00');
+    select coalesce(sum(review_count), 0) into v_int
+      from public.daily_activity where user_id = ua and day = date '2026-01-09';
+    res := res || ('daily_activity usa el día local del usuario (22:30 en Bogotá ≠ día siguiente UTC)|'
+                   || case when v_int = 1 then 'PASS' else 'FAIL' end);
+
+    -- -------------------------------------------------------------------------
     -- RLS: actuar como el usuario A con la publishable key
     -- -------------------------------------------------------------------------
     select count(*) into v_int2 from public.vocabulary where user_id = ua;
@@ -214,6 +233,12 @@ begin
 
     select count(*) into v_int from public.profiles;
     res := res || ('RLS: A ve solo su perfil|' || case when v_int = 1 then 'PASS' else 'FAIL' end);
+
+    select count(*) into v_int from public.daily_activity where user_id = ua;
+    res := res || ('RLS: A ve su propia actividad diaria|' || case when v_int > 0 then 'PASS' else 'FAIL' end);
+
+    select count(*) into v_int from public.daily_activity where user_id = ub;
+    res := res || ('RLS: A no ve la actividad diaria de B|' || case when v_int = 0 then 'PASS' else 'FAIL' end);
 
     begin
       insert into public.vocabulary (user_id, word, translation, type, status)

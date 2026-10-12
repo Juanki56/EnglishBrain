@@ -16,7 +16,7 @@ try {
   throw error;
 }
 
-const app = createApp({ supabase: createSupabaseAdmin(config) });
+const app = createApp({ supabase: createSupabaseAdmin(config), corsOrigins: config.corsOrigins });
 
 app.listen(config.port, (error?: Error) => {
   if (error) {

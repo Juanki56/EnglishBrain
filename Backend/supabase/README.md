@@ -6,8 +6,9 @@ Esquema multiusuario: cada fila pertenece a un usuario (`user_id`) y nadie puede
 |---|---|
 | `migrations/001_schema.sql` | 10 tablas, restricciones, índices y triggers |
 | `migrations/002_rls_queue_storage.sql` | Seguridad por filas (RLS), vista `srs_queue`, bucket `speaking-audio` y sus políticas |
-| `checks/verify_schema.sql` | 28 comprobaciones PASS/FAIL. No deja datos |
-| `rollback/002_down.sql`, `rollback/001_down.sql` | Deshacen las migraciones (⚠️ `001_down` borra todos los datos) |
+| `migrations/003_daily_activity.sql` | Vista `daily_activity`: actividad por usuario y día local (base de la racha y del mapa de calor) |
+| `checks/verify_schema.sql` | 32 comprobaciones PASS/FAIL. No deja datos |
+| `rollback/003_down.sql`, `rollback/002_down.sql`, `rollback/001_down.sql` | Deshacen las migraciones, en ese orden (⚠️ `001_down` borra todos los datos) |
 
 ## Aplicar (primera vez)
 
@@ -16,12 +17,14 @@ Esquema multiusuario: cada fila pertenece a un usuario (`user_id`) y nadie puede
    - Resultado esperado: `Success. No rows returned`.
 3. Pulsa **New query** otra vez, haz lo mismo con `migrations/002_rls_queue_storage.sql` y pulsa **Run**.
    - Resultado esperado: `Success. No rows returned`.
-4. Pulsa **New query**, pega `checks/verify_schema.sql` y pulsa **Run**.
-   - Resultado esperado: una tabla de 28 filas, todas con `PASS` en la columna `result`.
+4. Pulsa **New query**, haz lo mismo con `migrations/003_daily_activity.sql` y pulsa **Run**.
+   - Resultado esperado: `Success. No rows returned`.
+5. Pulsa **New query**, pega `checks/verify_schema.sql` y pulsa **Run**.
+   - Resultado esperado: una tabla de 32 filas, todas con `PASS` en la columna `result`.
 
 Si Supabase muestra un aviso de "destructive operation" o de "RLS", confirma con **Run this query**: es normal porque los scripts crean políticas y triggers.
 
-Ambas migraciones se pueden volver a ejecutar sin romper nada (son idempotentes).
+Todas las migraciones se pueden volver a ejecutar sin romper nada (son idempotentes).
 
 ## Comprobar a ojo
 
@@ -33,13 +36,13 @@ Ambas migraciones se pueden volver a ejecutar sin romper nada (son idempotentes)
 
 | Síntoma | Qué hacer |
 |---|---|
-| `relation "public.vocabulary" does not exist` al ejecutar 002 | Ejecuta primero `001_schema.sql` |
+| `relation "public.vocabulary" does not exist` al ejecutar 002 o 003 | Ejecuta primero `001_schema.sql` (y `002` antes que `003`) |
 | `must be owner of table objects` al crear las políticas de Storage | Crea las 3 políticas desde **Storage → Policies → speaking-audio** con la condición `(storage.foldername(name))[1] = auth.uid()::text` para SELECT, INSERT y DELETE (rol `authenticated`) |
 | Alguna fila de `verify_schema.sql` sale `FAIL` o `ERROR` | Copia la tabla completa y compártela |
 
 ## Deshacer
 
-Ejecuta `rollback/002_down.sql` y después `rollback/001_down.sql` en el SQL Editor.
+Ejecuta `rollback/003_down.sql`, después `rollback/002_down.sql` y por último `rollback/001_down.sql` en el SQL Editor.
 El bucket `speaking-audio` se borra a mano desde **Storage** (Supabase no permite borrarlo por SQL).
 
 ## Reglas clave que impone la base de datos
@@ -51,4 +54,5 @@ El bucket `speaking-audio` se borra a mano desde **Storage** (Supabase no permit
 - Las versiones de writing se numeran solas (1, 2, 3…), nunca se modifican y siempre son del mismo dueño que su entrada.
 - Un check-in por usuario, día y hábito.
 - Al borrar una cuenta en `auth.users` se borran en cascada todos sus datos.
+- La vista `daily_activity` convierte cada repaso y cada término creado al **día local** del usuario (según `profiles.timezone`); un día es activo si `total > 0`.
 - `review_events` no tiene FK al ítem repasado, así las rachas pasadas se mantienen aunque borres un registro.

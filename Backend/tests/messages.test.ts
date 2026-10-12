@@ -21,7 +21,7 @@ async function setup() {
   return { app: createApp({ supabase }), token };
 }
 
-type Case = [method: 'get' | 'post' | 'patch', path: string, body?: unknown, auth?: 'session' | 'token'];
+type Case = [method: 'get' | 'post' | 'patch' | 'put', path: string, body?: unknown, auth?: 'session' | 'token'];
 
 // Un caso inválido por cada campo validado de la API.
 const INVALID_CASES: Case[] = [
@@ -65,6 +65,16 @@ const INVALID_CASES: Case[] = [
   ['post', '/api/speaking', { title: 'a', duration_seconds: 601 }],
   ['patch', `/api/speaking/${WORD_ID}`, { title: '' }],
   ['get', '/api/speaking?limit=0'],
+  // Motor de repasos
+  ['get', '/api/srs/queue?limit=abc&offset=-2'],
+  ['post', '/api/srs/review', {}],
+  ['post', '/api/srs/review', { item_type: 'palabra', item_id: 5, grade: 'bien' }],
+  ['post', '/api/srs/review', { item_type: 'vocabulary', item_id: 'abc', grade: 7 }],
+  ['patch', `/api/items/vocabulary/${WORD_ID}/srs-toggle`, {}],
+  ['patch', `/api/items/errors/${WORD_ID}/srs-toggle`, { is_active_srs: 'no' }],
+  // Hábitos
+  ['put', '/api/habits/today', {}],
+  ['put', '/api/habits/today', { reading_listening: 1, speaking: 'sí', writing: null }],
 ];
 
 async function send(app: ReturnType<typeof createApp>, token: string, [method, path, body, auth = 'session']: Case) {

@@ -33,11 +33,7 @@ const DEFAULTS: Record<string, () => Row> = {
     status: 'pending_curation',
     source: 'manual',
     source_url: null,
-    is_active_srs: true,
-    due_at: null,
-    retention_state: 'learning',
-    created_at: now(),
-    updated_at: now(),
+    ...srsDefaults(),
   }),
   fossilized_errors: () => ({
     id: randomUUID(), notes: null, is_resolved: false, resolved_at: null, ...srsDefaults(),
@@ -45,12 +41,26 @@ const DEFAULTS: Record<string, () => Row> = {
   writing_logs: () => ({ id: randomUUID(), ...srsDefaults() }),
   writing_versions: () => ({ id: randomUUID(), created_at: now() }),
   speaking_logs: () => ({ id: randomUUID(), size_bytes: null, recording_limit_minutes: null, ...srsDefaults() }),
+  review_events: () => ({ id: randomUUID(), interval_before: null, interval_after: null, reviewed_at: now() }),
+  habit_checkins: () => ({ id: randomUUID(), created_at: now() }),
   listening_logs: () => ({ id: randomUUID(), start_seconds: null, ...srsDefaults() }),
 };
 
 function srsDefaults(): Row {
-  return { is_active_srs: true, due_at: null, retention_state: 'learning', created_at: now(), updated_at: now() };
+  return {
+    is_active_srs: true, due_at: null, interval_days: 0, ease: 2.5, repetitions: 0, lapses: 0,
+    retention_state: 'learning', last_reviewed_at: null, created_at: now(), updated_at: now(),
+  };
 }
+
+/** Tablas que forman la vista srs_queue y su item_type. */
+const QUEUE_SOURCES: Array<[table: string, itemType: string]> = [
+  ['vocabulary', 'vocabulary'],
+  ['fossilized_errors', 'fossilized_error'],
+  ['speaking_logs', 'speaking'],
+  ['writing_logs', 'writing'],
+  ['listening_logs', 'listening'],
+];
 
 const SRS_TABLES = new Set(['vocabulary', 'fossilized_errors', 'speaking_logs', 'writing_logs', 'listening_logs']);
 
@@ -93,7 +103,42 @@ export class FakeDb {
   insertFailures = new Set<string>();
 
   rows(table: string): Row[] {
+    if (table === 'srs_queue') return this.queueRows();
+    if (table === 'daily_activity') return this.activityRows();
     return (this.tables[table] ??= []);
+  }
+
+  /** Equivalente a la vista daily_activity de 003_daily_activity.sql. */
+  private activityRows(): Row[] {
+    const timezones = new Map(this.rows('profiles').map((p) => [p.id, String(p.timezone ?? 'UTC')]));
+    const localDay = (userId: unknown, iso: unknown) =>
+      new Intl.DateTimeFormat('en-CA', { timeZone: timezones.get(userId) ?? 'UTC', year: 'numeric', month: '2-digit', day: '2-digit' })
+        .format(new Date(String(iso)));
+    const events = [
+      ...this.rows('vocabulary').filter((r) => timezones.has(r.user_id)).map((r) => ({ user_id: r.user_id, day: localDay(r.user_id, r.created_at), kind: 'vocabulary' })),
+      ...this.rows('review_events').filter((r) => timezones.has(r.user_id)).map((r) => ({ user_id: r.user_id, day: localDay(r.user_id, r.reviewed_at), kind: 'review' })),
+      ...this.rows('habit_checkins').map((r) => ({ user_id: r.user_id, day: String(r.date), kind: 'checkin' })),
+    ];
+    const groups = new Map<string, Row>();
+    for (const event of events) {
+      const key = `${event.user_id}|${event.day}`;
+      const group = groups.get(key) ?? { user_id: event.user_id, day: event.day, vocabulary_count: 0, review_count: 0, checkin_count: 0, total: 0 };
+      group[`${event.kind}_count`] = Number(group[`${event.kind}_count`]) + 1;
+      group.total = Number(group.total) + 1;
+      groups.set(key, group);
+    }
+    return [...groups.values()];
+  }
+
+  /** Equivalente a la vista srs_queue de 002_rls_queue_storage.sql. */
+  private queueRows(): Row[] {
+    const nowIso = now();
+    return QUEUE_SOURCES.flatMap(([table, itemType]) =>
+      this.rows(table)
+        .filter((row) => row.is_active_srs && row.due_at && String(row.due_at) <= nowIso)
+        .filter((row) => table !== 'vocabulary' || row.status !== 'pending_curation')
+        .map((row) => ({ user_id: row.user_id, item_type: itemType, item_id: row.id, due_at: row.due_at })),
+    );
   }
 
   bucket(name: string) {
@@ -171,6 +216,16 @@ class FakeQuery implements PromiseLike<Result> {
 
   eq(column: string, value: unknown) {
     this.filters.push((row) => row[column] === value);
+    return this;
+  }
+
+  gte(column: string, value: string) {
+    this.filters.push((row) => row[column] != null && String(row[column]) >= value);
+    return this;
+  }
+
+  limit(count: number) {
+    this.window = { from: 0, to: count - 1 };
     return this;
   }
 
@@ -264,6 +319,10 @@ class FakeQuery implements PromiseLike<Result> {
         for (const row of rows) {
           const failed = this.violation(row);
           if (failed) return failed;
+          // UNIQUE (user_id, date, habit) de habit_checkins.
+          if (this.table === 'habit_checkins' && table.some((r) => r.user_id === row.user_id && r.date === row.date && r.habit === row.habit)) {
+            return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint' } };
+          }
         }
         table.push(...rows);
         affected = rows;

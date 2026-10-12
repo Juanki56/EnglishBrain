@@ -98,6 +98,8 @@ Se garantiza el orden 2 < 3 < 4 forzando `interval(3) ≥ interval(2) + 1` y `in
 - Vanilla JS sin bundler para cumplir la estructura exigida.
 
 ### D8. Racha y zona horaria
+*Detalle fijado al implementar:* la actividad por día local la calcula la vista `daily_activity` (migración `003_daily_activity.sql`, una fila por usuario y día), para no chocar con el límite de 1000 filas de la API al leer meses de repasos.
+
 `habit.service.ts` calcula días activos (D-activo = término creado ∨ `review_event` ∨ check-in) del usuario autenticado, agrupando por fecha en la `timezone` de su perfil (IANA). La fecha "hoy" del check-in también se resuelve con esa zona en el Backend, nunca con la hora del servidor. Endpoint `GET /api/stats/streak` devuelve `{ streak, heatmap: [{date, count}] × 30 }`. El contexto inicial da dos definiciones parciales de racha; se adopta su unión (ver spec habit-tracking).
 
 ### D9. Esfuerzo por habilidad
