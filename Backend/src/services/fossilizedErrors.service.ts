@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { throwIfError } from './db.js';
 import { scoped } from './scoped.js';
+import type { SrsFilter } from '../validation.js';
 
 /** Muro de Errores Fosilizados (spec fossilized-errors). */
 export interface FossilizedError {
@@ -26,6 +27,7 @@ const errors = (supabase: SupabaseClient, userId: string) => scoped(supabase, 'f
 export interface ErrorFilters {
   status?: 'active' | 'resolved';
   q?: string;
+  srs?: SrsFilter;
   limit: number;
   offset: number;
 }
@@ -37,6 +39,7 @@ export async function listErrors(
 ): Promise<{ items: FossilizedError[]; total: number }> {
   let query = errors(supabase, userId).select(COLUMNS, { count: 'exact' });
   if (filters.status) query = query.eq('is_resolved', filters.status === 'resolved');
+  if (filters.srs) query = query.eq('is_active_srs', filters.srs === 'active');
   if (filters.q) {
     const pattern = `%${filters.q}%`;
     query = query.or(`incorrect_phrase.ilike.${pattern},correct_phrase.ilike.${pattern},notes.ilike.${pattern}`);

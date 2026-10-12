@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { serviceUnavailable, validationError } from '../errors.js';
 import { throwIfError } from './db.js';
 import { scoped } from './scoped.js';
+import type { SrsFilter } from '../validation.js';
 
 /**
  * Monólogos de Speaking (spec speaking-log, design D6). El audio vive en el
@@ -100,10 +101,11 @@ export async function createSpeaking(
 export async function listSpeaking(
   supabase: SupabaseClient,
   userId: string,
-  filters: { q?: string; limit: number; offset: number },
+  filters: { q?: string; srs?: SrsFilter; limit: number; offset: number },
 ): Promise<{ items: SpeakingEntry[]; total: number }> {
   let query = speaking(supabase, userId).select(COLUMNS, { count: 'exact' });
   if (filters.q) query = query.or(`title.ilike.%${filters.q}%`);
+  if (filters.srs) query = query.eq('is_active_srs', filters.srs === 'active');
 
   const { data, error, count } = await query
     .order('created_at', { ascending: false })

@@ -24,6 +24,7 @@ import {
   parse,
   requiredText,
   searchField,
+  srsFilterField,
 } from '../validation.js';
 
 // -----------------------------------------------------------------------------
@@ -72,6 +73,7 @@ const listSchema = z.object({
   type: typeField.optional(),
   source: choice(VOCABULARY_SOURCES, 'Origen no válido: usa extension o manual').optional(),
   q: searchField,
+  srs: srsFilterField,
   ...paginationFields,
 });
 

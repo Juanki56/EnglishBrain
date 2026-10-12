@@ -68,6 +68,14 @@ export const isActiveSrsField = z
   .boolean({ error: 'Indica si quieres añadirlo a los repasos diarios (true o false)' })
   .default(true);
 
+export type SrsFilter = 'active' | 'archived';
+
+/** Filtro de Modo Archivo de los listados: en repasos (active) o solo archivo (archived). */
+export const srsFilterField = choice(
+  ['active', 'archived'],
+  'Filtro de repasos no válido: usa active (en repasos) o archived (archivo)',
+).optional();
+
 /** Número entero de un query param (llega como texto). */
 export function queryInt(label: string, min: number, max: number, fallback: number) {
   const range = `${label} debe estar entre ${min} y ${max}`;

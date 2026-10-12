@@ -125,7 +125,7 @@ const body = parse(createWordSchema, req.body); // lanza 400 validation_error si
 
 ## Endpoints
 
-Todas las respuestas son JSON. **Auth**: "Sesión" = `Authorization: Bearer <access token>` del Frontend; "Token `ebk_`" = token personal de la extensión (ver [Autenticación](#autenticación)). Los listados devuelven `{ items, total }` y aceptan `limit` (1–200, por defecto 50) y `offset`. Un registro de otro usuario responde `404`.
+Todas las respuestas son JSON. **Auth**: "Sesión" = `Authorization: Bearer <access token>` del Frontend; "Token `ebk_`" = token personal de la extensión (ver [Autenticación](#autenticación)). Los listados devuelven `{ items, total }` y aceptan `limit` (1–200, por defecto 50) y `offset`. Los cinco listados de la biblioteca (vocabulario, errores, writing, listening, speaking) aceptan además `srs=active` (en repasos) o `srs=archived` (archivo). Un registro de otro usuario responde `404`.
 
 ### Salud y cuenta
 

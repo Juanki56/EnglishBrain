@@ -60,49 +60,49 @@
 
 ## 9. Frontend — Scaffolding
 
-- [ ] 9.1 Crear `Frontend/` con Vite + React + TypeScript + Tailwind + React Router + Vitest + Testing Library; verificar que `npm run dev` y `npm run build` funcionan
-- [ ] 9.2 Crear la jerarquía `Frontend/src/{components/ui,components/dashboard,components/anki,components/speaking,hooks,views}/`; verificar la presencia de las carpetas
-- [ ] 9.3 Configurar Tailwind Desktop-First (ancho mínimo 1280 px, sin breakpoints móviles) y el layout base con navegación lateral; verificar visualmente a 1280 px y documentar en `Frontend/README.md`
-- [ ] 9.4 Crear componentes base en `components/ui/` (Button, Input, Textarea, Toggle SRS, Table, Modal, Toast, ArchiveBadge "🔴 Archivo / Solo Almacenamiento"); verificar con pruebas de render del Toggle y el Badge
+- [x] 9.1 Crear `Frontend/` con Vite + React + TypeScript + Tailwind + React Router + Vitest + Testing Library; verificar que `npm run dev` y `npm run build` funcionan
+- [x] 9.2 Crear la jerarquía `Frontend/src/{components/ui,components/dashboard,components/anki,components/speaking,hooks,views}/`; verificar la presencia de las carpetas
+- [x] 9.3 Configurar Tailwind Desktop-First (ancho mínimo 1280 px, sin breakpoints móviles) y el layout base con navegación lateral; verificar visualmente a 1280 px y documentar en `Frontend/README.md`
+- [x] 9.4 Crear componentes base en `components/ui/` (Button, Input, Textarea, Toggle SRS, Table, Modal, Toast, ArchiveBadge "🔴 Archivo / Solo Almacenamiento"); verificar con pruebas de render del Toggle y el Badge
 
 ## 10. Frontend — Cuentas de usuario y cliente API
 
-- [ ] 10.1 Configurar el cliente Supabase con `VITE_SUPABASE_PUBLISHABLE_KEY` (solo Auth), `hooks/useSession.ts` y el componente de ruta protegida; verificar que sin sesión cualquier vista privada redirige a `/login`
-- [ ] 10.2 Implementar `views/RegisterView.tsx` (email, contraseña ≥ 8, nombre visible; envía la zona horaria del navegador en metadata) y la pantalla "Revisa tu email"; verificar con pruebas de contraseña corta y envío correcto
-- [ ] 10.3 Implementar `views/LoginView.tsx` con mensaje genérico de error y aviso de email sin confirmar, `views/AuthCallbackView.tsx` (`/auth/callback`) y botón "Cerrar sesión" en el layout; verificar con pruebas y manualmente el ciclo registro → confirmación → login → logout
-- [ ] 10.4 Implementar `views/ForgotPasswordView.tsx` (respuesta idéntica exista o no el email) y `views/ResetPasswordView.tsx` (`/reset-password`); verificar manualmente que tras restablecer solo funciona la contraseña nueva
-- [ ] 10.5 Implementar `views/ProfileView.tsx`: edición de nombre y zona horaria, y gestión de tokens de extensión (generar con etiqueta mostrando el token una sola vez con botón copiar, listar con `last4` y último uso, revocar); verificar con pruebas
-- [ ] 10.6 Implementar `hooks/useApi.ts` que adjunta el access token vigente, normaliza errores `{error}` y redirige a `/login` ante 401; verificar con prueba unitaria
-- [ ] 10.7 Implementar `hooks/useHotkeys.ts` (ignora inputs salvo combinaciones permitidas); verificar con pruebas de teclado
-- [ ] 10.8 Documentar en `Frontend/README.md` la configuración de Site URL / Redirect URLs de Supabase Auth; verificar que siguiendo los pasos llegan los enlaces correctos
+- [x] 10.1 Configurar el cliente Supabase con `VITE_SUPABASE_PUBLISHABLE_KEY` (solo Auth), `hooks/useSession.ts` y el componente de ruta protegida; verificar que sin sesión cualquier vista privada redirige a `/login`
+- [x] 10.2 Implementar `views/RegisterView.tsx` (email, contraseña ≥ 8, nombre visible; envía la zona horaria del navegador en metadata) y la pantalla "Revisa tu email"; verificar con pruebas de contraseña corta y envío correcto
+- [x] 10.3 Implementar `views/LoginView.tsx` con mensaje genérico de error y aviso de email sin confirmar, `views/AuthCallbackView.tsx` (`/auth/callback`) y botón "Cerrar sesión" en el layout; verificar con pruebas y manualmente el ciclo registro → confirmación → login → logout
+- [x] 10.4 Implementar `views/ForgotPasswordView.tsx` (respuesta idéntica exista o no el email) y `views/ResetPasswordView.tsx` (`/reset-password`); verificar manualmente que tras restablecer solo funciona la contraseña nueva
+- [x] 10.5 Implementar `views/ProfileView.tsx`: edición de nombre y zona horaria, y gestión de tokens de extensión (generar con etiqueta mostrando el token una sola vez con botón copiar, listar con `last4` y último uso, revocar); verificar con pruebas
+- [x] 10.6 Implementar `hooks/useApi.ts` que adjunta el access token vigente, normaliza errores `{error}` y redirige a `/login` ante 401; verificar con prueba unitaria
+- [x] 10.7 Implementar `hooks/useHotkeys.ts` (ignora inputs salvo combinaciones permitidas); verificar con pruebas de teclado
+- [x] 10.8 Documentar en `Frontend/README.md` la configuración de Site URL / Redirect URLs de Supabase Auth; verificar que siguiendo los pasos llegan los enlaces correctos
 
 ## 11. Frontend — Inbox y creación manual
 
-- [ ] 11.1 Implementar `views/InboxView.tsx` con lista superior de pendientes (más antiguo primero) y estado vacío; verificar con prueba
-- [ ] 11.2 Implementar el panel de curación a dos columnas (palabra + contexto | traducción, definición, `type`, Toggle SRS) con foco inicial en traducción; verificar con prueba
-- [ ] 11.3 Implementar `Ctrl+Enter` → curar y avanzar al siguiente, validación de traducción vacía y botón Descartar; verificar con pruebas de los escenarios del spec vocabulary-curation
-- [ ] 11.4 Implementar `views/NewWordView.tsx` con auto-focus, campos requeridos y "Guardar y Crear Otra" que limpia y re-enfoca; verificar con prueba
+- [x] 11.1 Implementar `views/InboxView.tsx` con lista superior de pendientes (más antiguo primero) y estado vacío; verificar con prueba
+- [x] 11.2 Implementar el panel de curación a dos columnas (palabra + contexto | traducción, definición, `type`, Toggle SRS) con foco inicial en traducción; verificar con prueba
+- [x] 11.3 Implementar `Ctrl+Enter` → curar y avanzar al siguiente, validación de traducción vacía y botón Descartar; verificar con pruebas de los escenarios del spec vocabulary-curation
+- [x] 11.4 Implementar `views/NewWordView.tsx` con auto-focus, campos requeridos y "Guardar y Crear Otra" que limpia y re-enfoca; verificar con prueba
 
 ## 12. Frontend — Muro de Errores
 
-- [ ] 12.1 Implementar `views/ErrorsView.tsx` con formulario a dos columnas + notas + Toggle SRS, listado lado a lado, filtro activos/superados y acción "Marcar como superado"; verificar con pruebas
+- [x] 12.1 Implementar `views/ErrorsView.tsx` con formulario a dos columnas + notas + Toggle SRS, listado lado a lado, filtro activos/superados y acción "Marcar como superado"; verificar con pruebas
 
 ## 13. Frontend — Speaking
 
-- [ ] 13.1 Implementar `hooks/useRecorder.ts` (MediaRecorder, límite 3/5/10 min, autostop, manejo de permiso denegado); verificar con pruebas usando MediaRecorder simulado
-- [ ] 13.2 Implementar el Web Worker de codificación MP3 (`@breezystack/lamejs`, mono 64 kbps) con progreso; verificar que un audio de prueba produce un Blob `audio/mpeg`
-- [ ] 13.3 Implementar `components/speaking/` (selector de duración, temporizador, previsualización, Subir/Descartar, título requerido, reintento sin perder buffer, guardia `beforeunload`) y `views/SpeakingView.tsx`; verificar con pruebas de descarte y reintento
+- [x] 13.1 Implementar `hooks/useRecorder.ts` (MediaRecorder, límite 3/5/10 min, autostop, manejo de permiso denegado); verificar con pruebas usando MediaRecorder simulado
+- [x] 13.2 Implementar el Web Worker de codificación MP3 (`@breezystack/lamejs`, mono 64 kbps) con progreso; verificar que un audio de prueba produce un Blob `audio/mpeg`
+- [x] 13.3 Implementar `components/speaking/` (selector de duración, temporizador, previsualización, Subir/Descartar, título requerido, reintento sin perder buffer, guardia `beforeunload`) y `views/SpeakingView.tsx`; verificar con pruebas de descarte y reintento
 - [ ] 13.4 Implementar `components/speaking/AudioPlayer.tsx` que obtiene la URL firmada; verificar reproducción manual de una grabación subida
 
 ## 14. Frontend — Writing y Listening
 
-- [ ] 14.1 Implementar `views/WritingView.tsx` (crear entrada, añadir versión corregida, comparación original vs. versión seleccionada); verificar con pruebas
-- [ ] 14.2 Implementar `views/ListeningView.tsx` (formulario con URL, inicio opcional, transcripción; botón "Escuchar" en pestaña nueva con marca de tiempo para YouTube); verificar con pruebas
+- [x] 14.1 Implementar `views/WritingView.tsx` (crear entrada, añadir versión corregida, comparación original vs. versión seleccionada); verificar con pruebas
+- [x] 14.2 Implementar `views/ListeningView.tsx` (formulario con URL, inicio opcional, transcripción; botón "Escuchar" en pestaña nueva con marca de tiempo para YouTube); verificar con pruebas
 
 ## 15. Frontend — Biblioteca
 
-- [ ] 15.1 Implementar `views/LibraryView.tsx` con pestañas por categoría, búsqueda y filtros (SRS activo/archivo, `type`, retención); verificar con pruebas de filtro
-- [ ] 15.2 Implementar Toggle SRS por fila con actualización optimista y reversión en error, edición y eliminación con confirmación; verificar con pruebas
+- [x] 15.1 Implementar `views/LibraryView.tsx` con pestañas por categoría, búsqueda y filtros (SRS activo/archivo, `type`, retención); verificar con pruebas de filtro
+- [x] 15.2 Implementar Toggle SRS por fila con actualización optimista y reversión en error, edición y eliminación con confirmación; verificar con pruebas
 
 ## 16. Frontend — Modo Anki
 

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { throwIfError } from './db.js';
 import { scoped } from './scoped.js';
+import type { SrsFilter } from '../validation.js';
 
 /**
  * Bitácora de Writing (spec writing-log). El texto vive en writing_versions:
@@ -42,10 +43,11 @@ const versions = (supabase: SupabaseClient, userId: string) => scoped(supabase, 
 export async function listWriting(
   supabase: SupabaseClient,
   userId: string,
-  filters: { q?: string; limit: number; offset: number },
+  filters: { q?: string; srs?: SrsFilter; limit: number; offset: number },
 ): Promise<{ items: WritingListItem[]; total: number }> {
   let query = entries(supabase, userId).select(ENTRY_COLUMNS, { count: 'exact' });
   if (filters.q) query = query.or(`title.ilike.%${filters.q}%`);
+  if (filters.srs) query = query.eq('is_active_srs', filters.srs === 'active');
 
   const { data, error, count } = await query
     .order('created_at', { ascending: false })

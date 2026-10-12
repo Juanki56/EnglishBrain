@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/*
+ * Tema de EnglishBrain: claro, con el verde menta #C8F0D6 elegido por el usuario.
+ * Solo escritorio (spec dashboard): se eliminan los breakpoints responsive
+ * (sm:, md:, lg:…) para que nadie construya variantes móviles por accidente.
+ */
+@theme {
+  --breakpoint-*: initial;
+
+  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* Marca */
+  --color-brand-50: #f1fbf5;
+  --color-brand-100: #c8f0d6; /* color base elegido: fondos destacados, selección, chips */
+  --color-brand-200: #a3e2bb;
+  --color-brand-600: #1f7a4d; /* botones y enlaces: texto blanco con contraste 5,3:1 */
+  --color-brand-700: #17633e; /* hover de botones */
+  --color-brand-900: #14532d; /* texto sobre brand-100: contraste 7,3:1 */
+
+  /* Estados de retención del vocabulario (barra del Dashboard) */
+  --color-learning: #dc2626;
+  --color-reviewing: #d97706;
+  --color-mastered: #16a34a;
+}
+
+html {
+  min-width: 1280px;
+}
+
+body {
+  @apply bg-neutral-50 text-neutral-900 antialiased;
+}

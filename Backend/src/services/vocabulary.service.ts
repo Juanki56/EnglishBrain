@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { conflict } from '../errors.js';
 import { throwIfError } from './db.js';
 import { scoped } from './scoped.js';
+import type { SrsFilter } from '../validation.js';
 
 export const VOCABULARY_TYPES = ['word', 'phrasal_verb', 'idiom_slang'] as const;
 export const VOCABULARY_STATUSES = ['pending_curation', 'learning', 'reviewing', 'mastered'] as const;
@@ -80,6 +81,7 @@ export interface ListFilters {
   type?: VocabularyType;
   source?: VocabularySource;
   q?: string;
+  srs?: SrsFilter;
   limit: number;
   offset: number;
 }
@@ -97,6 +99,7 @@ export async function listVocabulary(
   if (filters.status) query = query.eq('status', filters.status);
   if (filters.type) query = query.eq('type', filters.type);
   if (filters.source) query = query.eq('source', filters.source);
+  if (filters.srs) query = query.eq('is_active_srs', filters.srs === 'active');
   if (filters.q) {
     const pattern = `%${filters.q}%`;
     query = query.or(`word.ilike.${pattern},context_sentence.ilike.${pattern},translation.ilike.${pattern}`);

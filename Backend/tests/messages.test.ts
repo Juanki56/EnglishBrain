@@ -72,6 +72,12 @@ const INVALID_CASES: Case[] = [
   ['post', '/api/srs/review', { item_type: 'vocabulary', item_id: 'abc', grade: 7 }],
   ['patch', `/api/items/vocabulary/${WORD_ID}/srs-toggle`, {}],
   ['patch', `/api/items/errors/${WORD_ID}/srs-toggle`, { is_active_srs: 'no' }],
+  // Filtro de Modo Archivo en los listados
+  ['get', '/api/vocabulary?srs=todos'],
+  ['get', '/api/errors?srs=si'],
+  ['get', '/api/writing?srs=1'],
+  ['get', '/api/listening?srs=archivo'],
+  ['get', '/api/speaking?srs=activo'],
   // Hábitos
   ['put', '/api/habits/today', {}],
   ['put', '/api/habits/today', { reading_listening: 1, speaking: 'sí', writing: null }],

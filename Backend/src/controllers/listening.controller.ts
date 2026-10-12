@@ -9,7 +9,7 @@ import {
   updateListening,
 } from '../services/listening.service.js';
 import { getSupabase } from '../services/supabase.js';
-import { isActiveSrsField, paginationFields, parse, requiredText, searchField } from '../validation.js';
+import { isActiveSrsField, paginationFields, parse, requiredText, searchField, srsFilterField } from '../validation.js';
 
 const titleField = requiredText('El título', 200, 'm');
 
@@ -28,7 +28,7 @@ const startSecondsField = z
 
 const transcriptionField = requiredText('La transcripción', 20_000, 'f');
 
-const listSchema = z.object({ q: searchField, ...paginationFields });
+const listSchema = z.object({ q: searchField, srs: srsFilterField, ...paginationFields });
 
 const createSchema = z.object({
   title: titleField,

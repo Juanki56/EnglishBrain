@@ -12,7 +12,7 @@ import {
   updateSpeakingTitle,
 } from '../services/speaking.service.js';
 import { getSupabase } from '../services/supabase.js';
-import { isActiveSrsField, paginationFields, parse, requiredText, searchField } from '../validation.js';
+import { isActiveSrsField, paginationFields, parse, requiredText, searchField, srsFilterField } from '../validation.js';
 
 const titleField = requiredText('El título', 200, 'm');
 
@@ -47,7 +47,7 @@ const createSchema = z.object({
   is_active_srs: z.preprocess(toBoolean, isActiveSrsField),
 });
 
-const listSchema = z.object({ q: searchField, ...paginationFields });
+const listSchema = z.object({ q: searchField, srs: srsFilterField, ...paginationFields });
 
 const updateSchema = z.object({ title: titleField });
 

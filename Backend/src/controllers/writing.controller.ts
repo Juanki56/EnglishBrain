@@ -10,12 +10,12 @@ import {
   listWriting,
   updateWritingTitle,
 } from '../services/writing.service.js';
-import { isActiveSrsField, paginationFields, parse, requiredText, searchField } from '../validation.js';
+import { isActiveSrsField, paginationFields, parse, requiredText, searchField, srsFilterField } from '../validation.js';
 
 const titleField = requiredText('El título', 200, 'm');
 const contentField = requiredText('El texto', 50_000, 'm');
 
-const listSchema = z.object({ q: searchField, ...paginationFields });
+const listSchema = z.object({ q: searchField, srs: srsFilterField, ...paginationFields });
 
 const createSchema = z.object({
   title: titleField,

@@ -17,6 +17,7 @@ import {
   parse,
   requiredText,
   searchField,
+  srsFilterField,
 } from '../validation.js';
 
 const incorrectField = requiredText('La frase incorrecta', 500, 'f');
@@ -26,6 +27,7 @@ const notesField = optionalText('La nota', 2000);
 const listSchema = z.object({
   status: choice(['active', 'resolved'], 'Filtro no válido: usa active (activos) o resolved (superados)').optional(),
   q: searchField,
+  srs: srsFilterField,
   ...paginationFields,
 });
 

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { throwIfError } from './db.js';
 import { scoped } from './scoped.js';
+import type { SrsFilter } from '../validation.js';
 
 /** Retos de escucha (spec listening-log). */
 export interface ListeningEntry {
@@ -44,9 +45,10 @@ const listening = (supabase: SupabaseClient, userId: string) => scoped(supabase,
 export async function listListening(
   supabase: SupabaseClient,
   userId: string,
-  filters: { q?: string; limit: number; offset: number },
+  filters: { q?: string; srs?: SrsFilter; limit: number; offset: number },
 ) {
   let query = listening(supabase, userId).select(COLUMNS, { count: 'exact' });
+  if (filters.srs) query = query.eq('is_active_srs', filters.srs === 'active');
   if (filters.q) {
     const pattern = `%${filters.q}%`;
     query = query.or(`title.ilike.${pattern},transcription.ilike.${pattern}`);
