@@ -1,0 +1,14 @@
+# Dependencias y compilación
+node_modules/
+dist/
+coverage/
+
+# Secretos: nunca subir .env (sí la plantilla .env.example)
+.env
+.env.*
+!.env.example
+
+# Logs y sistema
+*.log
+.DS_Store
+Thumbs.db
