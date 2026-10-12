@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from 'express';
+import multer from 'multer';
 import { ZodError } from 'zod';
 import { HttpError, notFound } from '../errors.js';
 import { toErrorDetails } from '../validation.js';
@@ -30,6 +31,23 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof ZodError) {
     res.status(400).json({
       error: { code: 'validation_error', message: 'Los datos enviados no son válidos', details: toErrorDetails(err.issues) },
+    });
+    return;
+  }
+
+  if (err instanceof multer.MulterError) {
+    const tooLarge = err.code === 'LIMIT_FILE_SIZE';
+    const message = tooLarge
+      ? 'El audio no puede pesar más de 15 MB'
+      : err.code === 'LIMIT_UNEXPECTED_FILE' || err.code === 'LIMIT_FILE_COUNT'
+        ? 'Envía un único archivo, en el campo "audio"'
+        : 'El formulario enviado no es válido';
+    res.status(tooLarge ? 413 : 400).json({
+      error: {
+        code: tooLarge ? 'payload_too_large' : 'validation_error',
+        message,
+        details: [{ field: 'audio', message }],
+      },
     });
     return;
   }

@@ -37,8 +37,8 @@
 
 ## 5. Backend â€” Speaking y almacenamiento de audio
 
-- [ ] 5.1 Implementar `POST /api/speaking` (multipart, multer â‰¤ 15 MB, `title` requerido, `duration_seconds` â‰¤ 600, solo `audio/mpeg`) que sube a `speaking-audio/{user_id}/{id}.mp3` y crea la ficha; verificar con pruebas (Ã©xito, > 600 s rechazado, sin tÃ­tulo rechazado)
-- [ ] 5.2 Implementar `GET /api/speaking/:id/audio-url` con URL firmada de 5 min solo para el dueÃ±o y `DELETE` que elimina ficha y archivo; verificar con pruebas sobre el cliente simulado, incluido que B recibe 404 al pedir el audio de A
+- [x] 5.1 Implementar `POST /api/speaking` (multipart, multer â‰¤ 15 MB, `title` requerido, `duration_seconds` â‰¤ 600, solo `audio/mpeg`) que sube a `speaking-audio/{user_id}/{id}.mp3` y crea la ficha; verificar con pruebas (Ã©xito, > 600 s rechazado, sin tÃ­tulo rechazado)
+- [x] 5.2 Implementar `GET /api/speaking/:id/audio-url` con URL firmada de 5 min solo para el dueÃ±o y `DELETE` que elimina ficha y archivo; verificar con pruebas sobre el cliente simulado, incluido que B recibe 404 al pedir el audio de A
 
 ## 6. Backend â€” Motor SRS
 

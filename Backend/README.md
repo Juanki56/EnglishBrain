@@ -153,6 +153,12 @@ const body = parse(createWordSchema, req.body); // lanza 400 validation_error si
 | GET | `/api/listening` | Sesión | Retos de escucha con `open_url`. Filtro `q` (título y transcripción) |
 | POST | `/api/listening` | Sesión | `{ title, url (http/https), start_seconds?, transcription, is_active_srs? }` |
 | GET / PATCH / DELETE | `/api/listening/:id` | Sesión | Ver, editar (cualquier campo; `start_seconds: null` lo quita) o borrar. `open_url` salta al segundo de inicio en YouTube |
+| GET | `/api/speaking` | Sesión | Monólogos `{ items, total }` (sin la ruta interna del audio). Filtro `q` (título) |
+| POST | `/api/speaking` | Sesión | **multipart/form-data**: `audio` (MP3 real, ≤ 15 MB), `title`, `duration_seconds` (1–600, debe cuadrar con el tamaño), `recording_limit_minutes?` (3/5/10), `is_active_srs?` (`true`/`false`). Sube a `speaking-audio/{user_id}/{id}.mp3` y crea la ficha; si la ficha falla, borra el audio. Si la subida falla → `503` y no se crea nada |
+| GET | `/api/speaking/:id` | Sesión | Una ficha |
+| PATCH | `/api/speaking/:id` | Sesión | Solo cambia `title` |
+| GET | `/api/speaking/:id/audio-url` | Sesión | `{ url, expires_at }`: enlace firmado de 5 minutos para reproducir (solo el dueño) |
+| DELETE | `/api/speaking/:id` | Sesión | Borra la ficha y su audio (204) |
 
 *(La tabla crece con cada grupo de tareas.)*
 

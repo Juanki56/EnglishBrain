@@ -59,6 +59,12 @@ const INVALID_CASES: Case[] = [
   ['post', '/api/listening', { title: 'a', url: 'https://x.com', start_seconds: -1, transcription: 'b' }],
   ['patch', `/api/listening/${WORD_ID}`, {}],
   ['patch', `/api/listening/${WORD_ID}`, { start_seconds: 1.5, url: '' }],
+  // Speaking (los campos de texto; el archivo se prueba en speaking.test.ts)
+  ['post', '/api/speaking', {}],
+  ['post', '/api/speaking', { title: 5, duration_seconds: 'abc', recording_limit_minutes: 7, is_active_srs: 'quizás' }],
+  ['post', '/api/speaking', { title: 'a', duration_seconds: 601 }],
+  ['patch', `/api/speaking/${WORD_ID}`, { title: '' }],
+  ['get', '/api/speaking?limit=0'],
 ];
 
 async function send(app: ReturnType<typeof createApp>, token: string, [method, path, body, auth = 'session']: Case) {

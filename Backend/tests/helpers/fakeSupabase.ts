@@ -44,6 +44,7 @@ const DEFAULTS: Record<string, () => Row> = {
   }),
   writing_logs: () => ({ id: randomUUID(), ...srsDefaults() }),
   writing_versions: () => ({ id: randomUUID(), created_at: now() }),
+  speaking_logs: () => ({ id: randomUUID(), size_bytes: null, recording_limit_minutes: null, ...srsDefaults() }),
   listening_logs: () => ({ id: randomUUID(), start_seconds: null, ...srsDefaults() }),
 };
 
@@ -74,14 +75,58 @@ const CHECKS: Record<string, (row: Row) => string | null> = {
     if (curated && row.status !== row.retention_state) return 'vocabulary_status_matches_retention';
     return null;
   },
+  speaking_logs: (row) => {
+    const duration = Number(row.duration_seconds);
+    if (!(duration >= 1 && duration <= 600)) return 'speaking_logs_duration_seconds_check';
+    if (row.storage_path !== `${row.user_id}/${row.id}.mp3`) return 'speaking_logs_storage_path_format';
+    return null;
+  },
 };
 
 export class FakeDb {
   tables: Record<string, Row[]> = {};
+  /** Archivos de Storage por bucket: ruta → contenido. */
+  files: Record<string, Map<string, { bytes: Buffer; contentType?: string }>> = {};
+  /** Fuerza fallos de Storage para probar la recuperación. */
+  storageFailures: { upload?: boolean; remove?: boolean; signedUrl?: boolean } = {};
+  /** Fuerza un fallo genérico al insertar en una tabla. */
+  insertFailures = new Set<string>();
 
   rows(table: string): Row[] {
     return (this.tables[table] ??= []);
   }
+
+  bucket(name: string) {
+    return (this.files[name] ??= new Map());
+  }
+}
+
+/** Storage simulado: upload, remove y createSignedUrl. */
+function fakeStorage(db: FakeDb) {
+  const fail = (message: string) => ({ data: null, error: { name: 'StorageApiError', message } });
+  return {
+    from(bucket: string) {
+      const files = db.bucket(bucket);
+      return {
+        async upload(path: string, body: Buffer, options: { contentType?: string; upsert?: boolean } = {}) {
+          if (db.storageFailures.upload) return fail('upload failed');
+          if (files.has(path) && !options.upsert) return fail('The resource already exists');
+          files.set(path, { bytes: Buffer.from(body), contentType: options.contentType });
+          return { data: { path }, error: null };
+        },
+        async remove(paths: string[]) {
+          if (db.storageFailures.remove) return fail('remove failed');
+          for (const path of paths) files.delete(path);
+          return { data: paths.map((name) => ({ name })), error: null };
+        },
+        async createSignedUrl(path: string, expiresIn: number) {
+          if (db.storageFailures.signedUrl) return fail('signed url failed');
+          if (!files.has(path)) return fail('Object not found');
+          return { data: { signedUrl: `https://fake.storage/${bucket}/${path}?expires=${expiresIn}` }, error: null };
+        },
+      };
+    },
+  };
 }
 
 class FakeQuery implements PromiseLike<Result> {
@@ -202,6 +247,9 @@ class FakeQuery implements PromiseLike<Result> {
 
     switch (this.op) {
       case 'insert': {
+        if (this.db.insertFailures.has(this.table)) {
+          return { data: null, error: { code: 'XX000', message: 'simulated insert failure' } };
+        }
         const rows = (this.payload as Row[]).map((values) => {
           const defaults = DEFAULTS[this.table]?.() ?? { id: randomUUID(), created_at: now() };
           const row = { ...defaults, ...values };
@@ -284,6 +332,7 @@ export function createFakeSupabase(sessions: Record<string, FakeUser> = {}) {
   const db = new FakeDb();
   const client = {
     from: (table: string) => new FakeQuery(db, table),
+    storage: fakeStorage(db),
     auth: {
       async getUser(jwt: string) {
         if (jwt === EXPIRED_SESSION) {

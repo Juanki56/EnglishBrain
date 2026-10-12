@@ -6,6 +6,7 @@ import { errorsRouter } from './routes/errors.routes.js';
 import { healthRouter } from './routes/health.routes.js';
 import { listeningRouter } from './routes/listening.routes.js';
 import { meRouter } from './routes/me.routes.js';
+import { speakingRouter } from './routes/speaking.routes.js';
 import { vocabularyRouter } from './routes/vocabulary.routes.js';
 import { writingRouter } from './routes/writing.routes.js';
 
@@ -32,6 +33,7 @@ export function createApp(deps: AppDeps = {}): Express {
   app.use('/api/errors', errorsRouter);
   app.use('/api/writing', writingRouter);
   app.use('/api/listening', listeningRouter);
+  app.use('/api/speaking', speakingRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
