@@ -6,7 +6,8 @@ services:
     name: englishbrain-api
     runtime: node
     plan: free
-    # La más cercana al proyecto de Supabase (Supabase → Settings → General → Region).
+    # La más cercana al proyecto de Supabase (ca-central-1, Montreal): Render no tiene región
+    # en Canadá y virginia es la más próxima.
     # Cambiarla después exige recrear el servicio.
     region: virginia
     rootDir: Backend

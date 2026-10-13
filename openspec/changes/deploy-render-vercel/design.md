@@ -95,4 +95,4 @@ Restricciones que fijan el enfoque (ver proposal.md, Why):
 
 ## Open Questions
 
-- **Región de Render**: debe ser la más cercana a la del proyecto de Supabase. Se mira en Supabase → Settings → General → Region al crear el servicio. Si no hay una equivalente, Virginia (`virginia`), la más cercana a Colombia. Cambiarla después exige recrear el servicio, pero no afecta a las specs ni a las tareas.
+- ~~Región de Render~~ **Resuelta**: Supabase está en `ca-central-1` (Montreal); Render no tiene región en Canadá y se usa `virginia`, la más cercana.
