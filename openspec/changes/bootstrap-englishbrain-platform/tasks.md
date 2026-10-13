@@ -92,7 +92,7 @@
 - [x] 13.1 Implementar `hooks/useRecorder.ts` (MediaRecorder, límite 3/5/10 min, autostop, manejo de permiso denegado); verificar con pruebas usando MediaRecorder simulado
 - [x] 13.2 Implementar el Web Worker de codificación MP3 (`@breezystack/lamejs`, mono 64 kbps) con progreso; verificar que un audio de prueba produce un Blob `audio/mpeg`
 - [x] 13.3 Implementar `components/speaking/` (selector de duración, temporizador, previsualización, Subir/Descartar, título requerido, reintento sin perder buffer, guardia `beforeunload`) y `views/SpeakingView.tsx`; verificar con pruebas de descarte y reintento
-- [ ] 13.4 Implementar `components/speaking/AudioPlayer.tsx` que obtiene la URL firmada; verificar reproducción manual de una grabación subida
+- [x] 13.4 Implementar `components/speaking/AudioPlayer.tsx` que obtiene la URL firmada; verificar reproducción manual de una grabación subida — Aceptada por el usuario sin la prueba manual (cubierta por pruebas automáticas y la prueba real del grupo 5)
 
 ## 14. Frontend — Writing y Listening
 
@@ -108,7 +108,7 @@
 
 - [x] 16.1 Implementar `hooks/useAnkiKeyboard.ts` (Espacio voltea, 1–4 solo tras voltear, Esc sale); verificar con pruebas de los escenarios del spec srs-review
 - [x] 16.2 Implementar `components/anki/` con tarjetas por `item_type` (vocabulario, error, speaking, writing, listening), reinserción al final tras calificar 1 y resumen de fin de sesión; verificar con pruebas
-- [ ] 16.3 Implementar `views/AnkiSessionView.tsx` a pantalla completa (Fullscreen API) sin controles que requieran ratón; verificar manualmente una sesión completa solo con teclado
+- [x] 16.3 Implementar `views/AnkiSessionView.tsx` a pantalla completa (Fullscreen API) sin controles que requieran ratón; verificar manualmente una sesión completa solo con teclado — Aceptada por el usuario sin la sesión manual con teclado (cubierta por pruebas automáticas)
 
 ## 17. Frontend — Dashboard
 
@@ -127,10 +127,10 @@
 
 ## 19. Integración end-to-end
 
-- [ ] 19.1 Flujo completo: registrarse → confirmar email → generar token en el perfil → configurar la extensión → capturar con la extensión → curar en Inbox con `Ctrl+Enter` → forzar vencimiento → repasar en Anki → ver cambio de racha y barra en Dashboard; verificar ejecutándolo y anotando el resultado en `README.md` raíz
-- [ ] 19.2 Verificar que un registro archivado (`is_active_srs=false`) de cada categoría nunca aparece en cola ni contador tras forzar su `due_at` al pasado
-- [ ] 19.3 Aislamiento real con dos cuentas: el usuario B no ve en su app, cola, Dashboard ni audios nada de lo creado por A, y el token de A no crea registros en B; verificar ejecutándolo contra Supabase real
-- [ ] 19.4 Crear `README.md` raíz con la estructura Backend/Frontend/Extension y el orden de arranque; verificar arrancando desde un clon limpio
+- [x] 19.1 Flujo completo: registrarse → confirmar email → generar token en el perfil → configurar la extensión → capturar con la extensión → curar en Inbox con `Ctrl+Enter` → forzar vencimiento → repasar en Anki → ver cambio de racha y barra en Dashboard; verificar ejecutándolo y anotando el resultado en `README.md` raíz — Hecho por la API contra Supabase real (13/13); registro por email y extensión verificados a mano en los grupos 10 y 18
+- [x] 19.2 Verificar que un registro archivado (`is_active_srs=false`) de cada categoría nunca aparece en cola ni contador tras forzar su `due_at` al pasado
+- [x] 19.3 Aislamiento real con dos cuentas: el usuario B no ve en su app, cola, Dashboard ni audios nada de lo creado por A, y el token de A no crea registros en B; verificar ejecutándolo contra Supabase real
+- [x] 19.4 Crear `README.md` raíz con la estructura Backend/Frontend/Extension y el orden de arranque; verificar arrancando desde un clon limpio
 
 ## Workflow follow-up
 

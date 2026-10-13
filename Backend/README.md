@@ -12,7 +12,7 @@ Es el único componente que habla con la base de datos; el Frontend y la extensi
 
 ### 1. Base de datos (una sola vez)
 
-Sigue [supabase/README.md](supabase/README.md): ejecutar `001_schema.sql` y `002_rls_queue_storage.sql` en el SQL Editor de Supabase y comprobar con `checks/verify_schema.sql` que todo sale PASS.
+Sigue [supabase/README.md](supabase/README.md): ejecutar `001_schema.sql`, `002_rls_queue_storage.sql` y `003_daily_activity.sql` (en ese orden) en el SQL Editor de Supabase y comprobar con `checks/verify_schema.sql` que todo sale PASS.
 
 ### 2. Instalar dependencias
 
