@@ -10,7 +10,7 @@ El usuario **no tiene CLI de Supabase, Docker ni psql**: aplica el SQL a mano en
 ## 0. Contexto
 
 - Carpeta: `Backend/supabase/` — `migrations/NNN_<nombre>.sql`, `rollback/NNN_down.sql`, `checks/verify_schema.sql`, `README.md`.
-- Lee las migraciones existentes y `openspec/changes/<change>/design.md` (decisiones D3 aislamiento, D4 SRS, D6 audio y la sección de detalles del esquema).
+- Lee las migraciones existentes y el `design.md` del change activo o, si no hay, el del plan inicial en `openspec/changes/archive/2026-10-13-bootstrap-englishbrain-platform/design.md` (decisiones D3 aislamiento, D4 SRS, D6 audio y la sección de detalles del esquema).
 - **No edites migraciones ya aplicadas** (001, 002…): crea la siguiente numerada (`003_<nombre>.sql`).
 
 ## 1. Convenciones del SQL

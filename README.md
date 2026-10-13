@@ -25,7 +25,7 @@ EnglishBrain/
 │   └── supabase/   migraciones SQL, rollback y comprobaciones         → Backend/supabase/README.md
 ├── Frontend/     App web: React + Vite + Tailwind + React Router     → Frontend/README.md
 ├── Extension/    Extensión de Chrome (Manifest V3, JavaScript)       → Extension/README.md
-└── openspec/     Especificación, diseño y tareas del proyecto
+└── openspec/     specs/ vigentes y changes/ (planes; los terminados en changes/archive/)
 ```
 
 ```
@@ -149,4 +149,5 @@ Pendiente. Al publicar: Backend en un servicio de Node con HTTPS, Frontend en un
 - [Backend/supabase/README.md](Backend/supabase/README.md): esquema, migraciones, rollback y verificación
 - [Frontend/README.md](Frontend/README.md): pantallas, atajos, diseño y componentes
 - [Extension/README.md](Extension/README.md): instalación, privacidad y checklist
-- `openspec/changes/bootstrap-englishbrain-platform/`: propuesta, especificaciones, diseño y tareas
+- `openspec/specs/`: especificaciones vigentes de cada capacidad (11)
+- `openspec/changes/archive/2026-10-13-bootstrap-englishbrain-platform/`: el plan inicial completo (propuesta, diseño y las 71 tareas)
