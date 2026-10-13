@@ -106,24 +106,24 @@
 
 ## 16. Frontend — Modo Anki
 
-- [ ] 16.1 Implementar `hooks/useAnkiKeyboard.ts` (Espacio voltea, 1–4 solo tras voltear, Esc sale); verificar con pruebas de los escenarios del spec srs-review
-- [ ] 16.2 Implementar `components/anki/` con tarjetas por `item_type` (vocabulario, error, speaking, writing, listening), reinserción al final tras calificar 1 y resumen de fin de sesión; verificar con pruebas
+- [x] 16.1 Implementar `hooks/useAnkiKeyboard.ts` (Espacio voltea, 1–4 solo tras voltear, Esc sale); verificar con pruebas de los escenarios del spec srs-review
+- [x] 16.2 Implementar `components/anki/` con tarjetas por `item_type` (vocabulario, error, speaking, writing, listening), reinserción al final tras calificar 1 y resumen de fin de sesión; verificar con pruebas
 - [ ] 16.3 Implementar `views/AnkiSessionView.tsx` a pantalla completa (Fullscreen API) sin controles que requieran ratón; verificar manualmente una sesión completa solo con teclado
 
 ## 17. Frontend — Dashboard
 
-- [ ] 17.1 Implementar `views/DashboardView.tsx` con layout de tres columnas; verificar visualmente a 1280 px
-- [ ] 17.2 Implementar en `components/dashboard/` el widget superior: racha + mapa de calor 30 días, barra segmentada roja/amarilla/verde, contador de errores críticos y distribución de esfuerzo; verificar con pruebas de render con datos fijos
-- [ ] 17.3 Implementar la cola del día ("Tienes N términos vencidos para hoy") y el CTA deshabilitado con felicitación cuando N = 0; verificar con pruebas
-- [ ] 17.4 Implementar la barra lateral: historial de los 5 últimos manuales con edición rápida en modal y widget de check-in con 3 casillas que encienden la celda de hoy sin recargar; verificar con pruebas
+- [x] 17.1 Implementar `views/DashboardView.tsx` con layout de tres columnas; verificar visualmente a 1280 px
+- [x] 17.2 Implementar en `components/dashboard/` el widget superior: racha + mapa de calor 30 días, barra segmentada roja/amarilla/verde, contador de errores críticos y distribución de esfuerzo; verificar con pruebas de render con datos fijos
+- [x] 17.3 Implementar la cola del día ("Tienes N términos vencidos para hoy") y el CTA deshabilitado con felicitación cuando N = 0; verificar con pruebas
+- [x] 17.4 Implementar la barra lateral: historial de los 5 últimos manuales con edición rápida en modal y widget de check-in con 3 casillas que encienden la celda de hoy sin recargar; verificar con pruebas
 
 ## 18. Extension — Chrome MV3
 
-- [ ] 18.1 Crear `Extension/manifest.json` (MV3, `contextMenus`, `storage`, `activeTab`, `scripting`, comando `Alt+S`, `host_permissions` al Backend, `options_ui`); verificar que Chrome lo carga como unpacked sin errores
-- [ ] 18.2 Implementar `Extension/content.js`: selección + ancestro de bloque más cercano, recorte a 2 000 caracteres con fallback a la oración, aviso de selección vacía y toast efímero; verificar manualmente en un artículo real
-- [ ] 18.3 Implementar `Extension/background.js`: menú "Enviar a mi Cerebro de Inglés", comando `Alt+S`, POST a `/api/capture` con el token personal leído de `chrome.storage`, badge de éxito/error y aviso específico ante 401 (token inválido o revocado); verificar que la fila aparece en `pending_curation` en la cuenta del dueño del token sin abrir pestañas
-- [ ] 18.4 Implementar `Extension/options.html` (+ script) para URL del Backend y el token personal generado en el perfil de la app, con botón "Probar conexión"; verificar que un token incorrecto o revocado muestra error
-- [ ] 18.5 Documentar instalación y checklist de prueba manual en `Extension/README.md`; verificar siguiendo el checklist
+- [x] 18.1 Crear `Extension/manifest.json` (MV3, `contextMenus`, `storage`, `activeTab`, `scripting`, comando `Alt+S`, `host_permissions` al Backend, `options_ui`); verificar que Chrome lo carga como unpacked sin errores
+- [x] 18.2 Implementar `Extension/content.js`: selección + ancestro de bloque más cercano, recorte a 2 000 caracteres con fallback a la oración, aviso de selección vacía y toast efímero; verificar manualmente en un artículo real
+- [x] 18.3 Implementar `Extension/background.js`: menú "Enviar a mi Cerebro de Inglés", comando `Alt+S`, POST a `/api/capture` con el token personal leído de `chrome.storage`, badge de éxito/error y aviso específico ante 401 (token inválido o revocado); verificar que la fila aparece en `pending_curation` en la cuenta del dueño del token sin abrir pestañas
+- [x] 18.4 Implementar `Extension/options.html` (+ script) para URL del Backend y el token personal generado en el perfil de la app, con botón "Probar conexión"; verificar que un token incorrecto o revocado muestra error
+- [x] 18.5 Documentar instalación y checklist de prueba manual en `Extension/README.md`; verificar siguiendo el checklist
 
 ## 19. Integración end-to-end
 

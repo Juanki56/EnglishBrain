@@ -3,9 +3,11 @@ import { AppLayout } from './components/ui/AppLayout';
 import { AuthLayout } from './components/ui/AuthLayout';
 import { GuestRoute, ProtectedRoute } from './components/ui/ProtectedRoute';
 import { ALL_SECTIONS } from './navigation';
+import { AnkiSessionView } from './views/AnkiSessionView';
 import { AuthCallbackView } from './views/AuthCallbackView';
 import { CheckEmailView } from './views/CheckEmailView';
 import { ComingSoonView } from './views/ComingSoonView';
+import { DashboardView } from './views/DashboardView';
 import { ErrorsView } from './views/ErrorsView';
 import { ForgotPasswordView } from './views/ForgotPasswordView';
 import { InboxView } from './views/InboxView';
@@ -21,8 +23,12 @@ import { SpeakingView } from './views/SpeakingView';
 import { UiKitView } from './views/UiKitView';
 import { WritingView } from './views/WritingView';
 
+/** La sesión Anki va a pantalla completa, fuera del menú lateral. */
+const FULLSCREEN = new Set(['/review']);
+
 /** Pantallas ya construidas; el resto muestra su página provisional. */
 const VIEWS: Record<string, React.ReactNode> = {
+  '/': <DashboardView />,
   '/inbox': <InboxView />,
   '/words/new': <NewWordView />,
   '/library': <LibraryView />,
@@ -52,8 +58,9 @@ export function App() {
 
       {/* App: requiere sesión */}
       <Route element={<ProtectedRoute />}>
+        <Route path="/review" element={<AnkiSessionView />} />
         <Route element={<AppLayout />}>
-          {ALL_SECTIONS.map((section) => (
+          {ALL_SECTIONS.filter((section) => !FULLSCREEN.has(section.path)).map((section) => (
             <Route key={section.path} path={section.path} element={VIEWS[section.path] ?? <ComingSoonView section={section} />} />
           ))}
           {import.meta.env.DEV && <Route path="/dev/ui" element={<UiKitView />} />}

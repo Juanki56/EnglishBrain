@@ -60,6 +60,14 @@ Al publicar la app se **añaden** las mismas rutas con el dominio real (sin borr
 - `hooks/useApi()` llama al Backend con el token de la sesión; `fieldErrors(error)` da el mensaje de cada campo para pasarlo al `error` de los `Input`.
 - `hooks/useHotkeys()` registra atajos de teclado (`'ctrl+Enter'`, `'Space'`, `'1'`…) que se ignoran mientras se escribe en un campo, salvo los permitidos en `allowInInputs`.
 
+## Panel (`/`)
+
+Tres columnas de escritorio. Cada bloque carga por su cuenta: si uno falla, muestra **Reintentar** y el resto sigue funcionando.
+
+- **Métricas** (izquierda): racha con mapa de calor de 30 días (la celda se oscurece con la actividad del día; hoy va recuadrada), vocabulario curado con barra **Learning / Reviewing / Mastered** (rojo, amarillo, verde; los pendientes del Inbox no cuentan y se enlazan aparte), errores sin superar y esfuerzo por habilidad en 30 días con tu foco destacado.
+- **Hoy** (centro): «Tienes N términos vencidos para hoy» y **Empezar repaso**, que abre la sesión Anki a pantalla completa y empieza directamente. Sin vencidos, el botón se deshabilita y te felicita.
+- **Barra lateral** (derecha): check-in de hoy con 3 casillas (se guardan al instante y encienden la celda de hoy sin recargar; si fallan, vuelven a su estado) y las 5 últimas palabras añadidas a mano, que se editan en una ventana sin salir del Panel.
+
 ## Vocabulario: Inbox y Nueva palabra
 
 - **`/inbox`**: arriba, las capturas de la extensión pendientes de curar (de la más antigua a la más reciente). Se abre sola la primera; al elegir otra, la pantalla se divide en dos columnas:
@@ -106,6 +114,14 @@ Piezas: `hooks/useRecorder.ts` (micrófono, límite, permiso denegado), `compone
 - En todas: búsqueda y filtro **Todos / En repasos / Archivo** (`srs=active|archived` en el Backend). En Vocabulario, además, **Tipo** y **Estado** (por curar, learning, reviewing, mastered), con los colores del Panel.
 - Cada fila tiene el interruptor **Repasos** (Modo Archivo): cambia al instante y, si el Backend falla, vuelve a su estado y avisa.
 - Vocabulario se edita en una ventana; el resto se abre en su propia pantalla (**Abrir**). Todo se puede borrar con confirmación (Speaking borra también el audio; Writing, todas las versiones).
+
+## Repasar · modo Anki (`/review`)
+
+- Pantalla completa (Fullscreen API), fuera del menú lateral. Pide hasta **100** tarjetas vencidas (las más atrasadas primero); si hay más, el resumen ofrece **Seguir con N más**.
+- Se usa entera con el teclado: **Enter** empieza, **Espacio** voltea, **1–4** califican (Otra vez, Difícil, Bien, Fácil; solo tras voltear), **Esc** sale. También hay botones para el ratón.
+- **Otra vez (1)** devuelve la tarjeta al final de la sesión. Cada calificación se guarda en segundo plano; si falla, avisa y la tarjeta vuelve a la cola.
+- Cada tipo tiene su tarjeta: vocabulario (palabra + contexto → traducción, definición, tipo), error (frase incorrecta → correcta + notas), speaking (reproducir el audio y calificar la fluidez), writing (título → texto y enlace para añadir versión corregida) y listening (**Escuchar** en el segundo exacto → tu transcripción).
+- Al terminar: tarjetas repasadas y distribución de calificaciones. Sin vencidas: **¡Estás al día!**
 
 ## Comandos
 
@@ -183,4 +199,4 @@ En desarrollo, **<http://localhost:5173/dev/ui>** muestra todos los componentes 
 | `/listening` | Listening | 14 |
 | `/profile` | Perfil | 10 |
 
-Las pantallas aún no construidas muestran una página provisional que explica qué contendrán y en qué grupo se hacen.
+Todas las pantallas del menú están construidas; `ComingSoonView` queda para secciones futuras.

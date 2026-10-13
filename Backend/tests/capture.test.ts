@@ -134,3 +134,35 @@ describe('POST /api/capture', () => {
     expect(inboxB.body.total).toBe(0);
   });
 });
+
+describe('GET /api/capture/check', () => {
+  it('con un token activo responde 200 y no crea ningún término', async () => {
+    const { app, db, tokenA } = await setup();
+    const res = await request(app).get('/api/capture/check').set('Authorization', `Bearer ${tokenA.token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true });
+    expect(db.rows('vocabulary')).toHaveLength(0);
+  });
+
+  it('sin token, con token revocado o con una sesión web responde 401 con el aviso en español', async () => {
+    const { app, supabase, tokenA } = await setup();
+    await revokeCaptureToken(supabase, USER_A.id, tokenA.id);
+
+    const missing = await request(app).get('/api/capture/check');
+    const revoked = await request(app).get('/api/capture/check').set('Authorization', `Bearer ${tokenA.token}`);
+    const session = await request(app).get('/api/capture/check').set('Authorization', `Bearer ${SESSION_A}`);
+    expect([missing.status, revoked.status, session.status]).toEqual([401, 401, 401]);
+    expect(revoked.body.error.message).toBe('Token de extensión inválido o revocado; genera uno nuevo en tu perfil');
+  });
+
+  it('la extensión (origen chrome-extension://) puede llamarlo por CORS', async () => {
+    const { app, tokenA } = await setup();
+    const res = await request(app)
+      .get('/api/capture/check')
+      .set('Origin', 'chrome-extension://abcdefghijklmnop')
+      .set('Authorization', `Bearer ${tokenA.token}`);
+
+    expect(res.headers['access-control-allow-origin']).toBe('chrome-extension://abcdefghijklmnop');
+  });
+});

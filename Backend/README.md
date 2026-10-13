@@ -143,6 +143,7 @@ Todas las respuestas son JSON. **Auth**: "Sesión" = `Authorization: Bearer <acc
 | Método | Ruta | Auth | Cuerpo / respuesta |
 |---|---|---|---|
 | POST | `/api/capture` | Token `ebk_` | Captura de la extensión `{ word, context_sentence?, source_url? }` → `pending_curation` con tipo provisional (1 término = `word`, varios = `idiom_slang`). El contexto se recorta a 2000 caracteres |
+| GET | `/api/capture/check` | Token `ebk_` | Botón "Probar conexión" de la extensión: `{ ok: true }` si el token está activo, 401 si no. No crea nada |
 
 ### Vocabulario e Inbox
 
@@ -245,7 +246,7 @@ Qué webs pueden llamar a la API desde un navegador (`middlewares/cors.ts`):
 | Origen | Rutas permitidas |
 |---|---|
 | Los de `CORS_ORIGINS` (el Frontend, p. ej. `http://localhost:5173`) | Todas |
-| La extensión de Chrome (`chrome-extension://…`) | Solo `/api/capture` y `/api/health` |
+| La extensión de Chrome (`chrome-extension://…`) | Solo `/api/capture` (y `/api/capture/check`) y `/api/health` |
 | Cualquier otro | Ninguna: no reciben cabeceras CORS y el navegador bloquea la respuesta |
 
 - Métodos `GET, POST, PUT, PATCH, DELETE`; cabeceras `Authorization` y `Content-Type`; el navegador recuerda el permiso 10 minutos.

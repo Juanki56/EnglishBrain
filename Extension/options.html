@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EnglishBrain · Opciones</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icons/icon48.png" alt="" width="40" height="40" />
+      <div>
+        <h1>EnglishBrain</h1>
+        <p class="muted">Conecta la extensión con tu cuenta para enviar palabras a tu Inbox.</p>
+      </div>
+    </header>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="apiUrl">Dirección del Backend <span class="req">(obligatorio)</span></label>
+        <input id="apiUrl" name="apiUrl" type="url" autocomplete="off" spellcheck="false" placeholder="http://localhost:3000" aria-describedby="apiUrl-hint apiUrl-error" />
+        <p id="apiUrl-hint" class="hint">En tu PC es <code>http://localhost:3000</code>. Cuando despliegues la app, pon aquí la dirección del servidor.</p>
+        <p id="apiUrl-error" class="error" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label for="token">Token personal <span class="req">(obligatorio)</span></label>
+        <div class="row">
+          <input id="token" name="token" type="password" autocomplete="off" spellcheck="false" placeholder="ebk_…" aria-describedby="token-hint token-error" />
+          <button type="button" id="toggleToken" class="ghost" aria-pressed="false">Mostrar</button>
+        </div>
+        <p id="token-hint" class="hint">Genéralo en la app: <strong>Perfil → Tokens de la extensión → Generar token</strong>. Solo sirve para enviar palabras a tu Inbox y puedes revocarlo cuando quieras.</p>
+        <p id="token-error" class="error" role="alert"></p>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="save">Guardar</button>
+        <button type="button" id="test" class="secondary">Probar conexión</button>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </form>
+
+    <section class="help">
+      <h2>Cómo capturar</h2>
+      <ol>
+        <li>Selecciona una palabra o frase en cualquier página en inglés.</li>
+        <li>Clic derecho → <strong>Enviar a mi Cerebro de Inglés</strong>, o pulsa <kbd id="shortcut">Alt+S</kbd>.</li>
+        <li>Verás «Guardada en tu Inbox» abajo a la derecha. La palabra te espera en el Inbox de la app con su párrafo.</li>
+      </ol>
+      <p class="muted">¿El atajo choca con otra cosa? <button type="button" id="shortcuts" class="link">Cámbialo aquí</button>.</p>
+    </section>
+  </main>
+  <script src="config.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
