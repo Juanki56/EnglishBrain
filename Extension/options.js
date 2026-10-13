@@ -72,7 +72,7 @@ $('test').addEventListener('click', () => {
   const permission = ensurePermission(config.apiUrl);
   void withBusy($('test'), async () => {
     if (!(await permission)) return;
-    setStatus('Probando…', 'busy');
+    setStatus('Probando… si el servidor estaba dormido puede tardar hasta un minuto.', 'busy');
     try {
       const { status, body } = await EB.request(config.apiUrl, '/api/capture/check', { token: config.token });
       if (status === 200) {

@@ -95,6 +95,7 @@
     success: { bg: '#14532d', fg: '#ffffff', accent: '#c8f0d6' },
     error: { bg: '#7f1d1d', fg: '#ffffff', accent: '#fecaca' },
     info: { bg: '#1f2937', fg: '#ffffff', accent: '#e5e7eb' },
+    wait: { bg: '#1f2937', fg: '#ffffff', accent: '#c8f0d6' },
   };
 
   function toast(message, kind = 'info') {
@@ -118,14 +119,15 @@
     box.style.background = colors.bg;
     box.style.color = colors.fg;
     const mark = box.querySelector('.mark');
-    mark.textContent = kind === 'success' ? '✓' : kind === 'error' ? '!' : '•';
+    mark.textContent = kind === 'success' ? '✓' : kind === 'error' ? '!' : kind === 'wait' ? '…' : '•';
     mark.style.color = colors.accent;
     box.querySelector('.text').textContent = message;
 
     requestAnimationFrame(() => box.classList.add('show'));
     clearTimeout(hideTimer);
     // Los errores se leen un poco más; las confirmaciones duran ≤ 2 s (spec browser-capture).
-    hideTimer = setTimeout(() => box.classList.remove('show'), kind === 'error' ? 4000 : 1800);
+    // El aviso de espera («Despertando el servidor…») no se oculta solo: lo sustituye el resultado.
+    if (kind !== 'wait') hideTimer = setTimeout(() => box.classList.remove('show'), kind === 'error' ? 4000 : 1800);
   }
 
   window.__englishBrain = { readSelection, toast, contextFor };

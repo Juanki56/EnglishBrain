@@ -141,7 +141,61 @@ Las piezas que dependen del navegador se verificaron a mano por separado: regist
 
 ## Despliegue
 
-Pendiente. Al publicar: Backend en un servicio de Node con HTTPS, Frontend en un hosting estático (p. ej. Vercel), `CORS_ORIGINS` y las URLs de Supabase Auth con el dominio real, un SMTP propio en Supabase para los correos, y la extensión apuntando a la dirección pública del Backend (desde sus opciones; Chrome pide permiso una vez).
+Coste 0: **Backend en Render** (plan gratuito) y **Frontend en Vercel**. Supabase ya está en la nube. Cada `git push` a `main` vuelve a publicar los dos automáticamente (Render solo cuando cambia `Backend/`).
+
+```
+ Chrome (app)  ──▶  https://<proyecto>.vercel.app      Frontend (Vercel, estático)
+      │                       │
+      │                       ▼
+ Extensión  ──────▶  https://<servicio>.onrender.com   Backend (Render, Node)
+                              │
+                              ▼
+                          Supabase (Postgres + Auth + Storage)
+```
+
+Configuración versionada: [`render.yaml`](render.yaml) (Blueprint de Render) y [`Frontend/vercel.json`](Frontend/vercel.json) (todas las rutas sirven `index.html`). Los secretos se escriben **solo en los paneles**, nunca en el repositorio.
+
+### Pasos (una sola vez)
+
+1. **Render** (entrar con GitHub) → **New → Blueprint** → repositorio `Juanki56/EnglishBrain`. Lee `render.yaml` y pide:
+   - `SUPABASE_SECRET_KEY`: la secret key (`sb_secret_…`).
+   - `CORS_ORIGINS`: de momento `http://localhost:5173`.
+
+   Al terminar, comprueba `https://<servicio>.onrender.com/api/health` → `{ "status": "ok" }`. La región del Blueprint (`virginia`) debe ser la más cercana a la de Supabase (Settings → General → Region).
+2. **Vercel** (entrar con GitHub) → **Add New → Project** → mismo repositorio, **Root Directory = `Frontend`** (detecta Vite). Variables de entorno:
+   - `VITE_API_URL` = la URL de Render
+   - `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` = las mismas que en local
+
+   **Deploy** y anota el dominio `https://<proyecto>.vercel.app`.
+3. **Render** → servicio → Environment: `CORS_ORIGINS=https://<proyecto>.vercel.app,http://localhost:5173` (se redespliega solo).
+4. **Supabase → Authentication → URL Configuration**:
+   - **Site URL** = `https://<proyecto>.vercel.app`
+   - **Redirect URLs**: añade `https://<proyecto>.vercel.app/auth/callback` y `https://<proyecto>.vercel.app/reset-password`, sin borrar las de localhost.
+5. **Extensión** → opciones: dirección = URL de Render → **Guardar** → **Permitir** → **Probar conexión**.
+
+### Variables por entorno
+
+| Dónde | Variable | Local | Producción |
+|---|---|---|---|
+| Backend | `SUPABASE_URL` | `Backend/.env` | `render.yaml` (no es secreta) |
+| Backend | `SUPABASE_SECRET_KEY` | `Backend/.env` | Panel de Render |
+| Backend | `CORS_ORIGINS` | `http://localhost:5173` | Panel de Render: dominio de Vercel + localhost |
+| Backend | `PORT` | `3000` | La pone Render |
+| Frontend | `VITE_API_URL` | `http://localhost:3000` | Panel de Vercel: URL de Render |
+| Frontend | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` | `Frontend/.env` | Panel de Vercel (mismos valores) |
+
+Las `VITE_` se incrustan al compilar: si cambias una en Vercel, **redespliega** (Deployments → ⋯ → Redeploy).
+
+### Límites del plan gratuito
+
+- **Render se duerme** tras 15 min sin uso y tarda ~50 s en despertar. La app muestra «Despertando el servidor…» si una petición tarda más de 4 s, y la extensión espera hasta 70 s con su propio aviso. Pasar a un plan de pago (Render → servicio → Settings → Instance Type) lo evita sin tocar código.
+- **Supabase pausa** los proyectos gratuitos tras 7 días sin actividad: se reactiva desde su panel. Usar la app al menos una vez por semana lo evita.
+- **Vistas previas de Vercel** (despliegues de prueba con otra URL) no están en `CORS_ORIGINS`, así que no pueden hablar con el Backend. Solo el dominio de producción funciona.
+- **Correo**: el de Supabase envía muy pocos emails por hora. Antes de invitar a otras personas, configurar un SMTP propio (p. ej. Resend) en Supabase Auth.
+
+### Volver atrás
+
+Render y Vercel guardan los despliegues anteriores: desde sus paneles se puede volver a uno anterior con un clic. El uso en local no depende de nada de esto.
 
 ## Documentación
 

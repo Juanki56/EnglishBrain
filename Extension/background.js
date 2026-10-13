@@ -65,21 +65,34 @@ async function capture(tab, frameId, fallbackText) {
     return flashBadge(tab.id, 'error', 'Falta permiso para el Backend');
   }
 
-  // 3. Enviar en segundo plano.
+  // 3. Enviar en segundo plano. Si el servidor tarda (Render gratuito dormido),
+  // a los 4 s se avisa de la espera; el resultado sustituye ese aviso.
+  let waiting = null;
+  const waitTimer = setTimeout(() => {
+    waiting = toast('Despertando el servidor… la palabra se guardará en cuanto responda.', 'wait');
+  }, EB.SLOW_MS);
+  let response = null;
   try {
-    const { status, body } = await EB.request(apiUrl, '/api/capture', { token, method: 'POST', body: read.capture });
-    if (status === 201) {
-      await toast(`«${read.capture.word}» guardada en tu Inbox`, 'success');
-      return flashBadge(tab.id, 'success', 'Guardada en tu Inbox');
-    }
-    const message = EB.errorMessage(status, body);
-    await toast(message, 'error');
-    flashBadge(tab.id, 'error', message);
+    response = await EB.request(apiUrl, '/api/capture', { token, method: 'POST', body: read.capture });
   } catch {
+    response = null;
+  } finally {
+    clearTimeout(waitTimer);
+    await waiting; // el aviso de espera nunca debe tapar el resultado
+  }
+
+  if (!response) {
     const message = EB.networkMessage(apiUrl);
     await toast(message, 'error');
-    flashBadge(tab.id, 'error', message);
+    return flashBadge(tab.id, 'error', message);
   }
+  if (response.status === 201) {
+    await toast(`«${read.capture.word}» guardada en tu Inbox`, 'success');
+    return flashBadge(tab.id, 'success', 'Guardada en tu Inbox');
+  }
+  const message = EB.errorMessage(response.status, response.body);
+  await toast(message, 'error');
+  flashBadge(tab.id, 'error', message);
 }
 
 /** Marca el icono un momento: ✓ verde si salió bien, ! rojo si no. */

@@ -101,3 +101,61 @@ describe('fieldErrors / generalMessage', () => {
     expect(generalMessage(new Error('boom'))).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
   });
 });
+
+describe('2.1 · Aviso de petición lenta (servidor despertando)', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  /** Cliente cuya respuesta se entrega a mano, para simular un servidor dormido. */
+  function slowClient() {
+    let deliver!: (response: Response) => void;
+    let fail!: (error: Error) => void;
+    const fetchImpl = vi.fn(() => new Promise<Response>((resolve, reject) => { deliver = resolve; fail = reject; }));
+    const onSlowStart = vi.fn();
+    const onSlowEnd = vi.fn();
+    const api = createApiClient({ baseUrl: 'http://api.test', getAccessToken: async () => 'tok', onSlowStart, onSlowEnd, fetchImpl: fetchImpl as unknown as typeof fetch });
+    return { api, onSlowStart, onSlowEnd, deliver: (r: Response) => deliver(r), fail: (e: Error) => fail(e) };
+  }
+
+  it('una respuesta en menos de 4 s no avisa', async () => {
+    const { api, onSlowStart, onSlowEnd, deliver } = slowClient();
+    const pending = api.get('/api/stats/overview');
+    await vi.advanceTimersByTimeAsync(3900);
+    deliver(json(200, {}));
+    await pending;
+    await vi.advanceTimersByTimeAsync(5000);
+
+    expect(onSlowStart).not.toHaveBeenCalled();
+    expect(onSlowEnd).not.toHaveBeenCalled();
+  });
+
+  it('a los 4 s avisa y al responder retira el aviso', async () => {
+    const { api, onSlowStart, onSlowEnd, deliver } = slowClient();
+    const pending = api.get('/api/stats/overview');
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(onSlowStart).toHaveBeenCalledTimes(1);
+    expect(onSlowEnd).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(46_000);
+    deliver(json(200, { ok: true }));
+
+    await expect(pending).resolves.toEqual({ ok: true });
+    expect(onSlowEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('si la petición lenta termina en error (HTTP o red), también retira el aviso', async () => {
+    const http = slowClient();
+    const p1 = http.api.get('/api/me');
+    await vi.advanceTimersByTimeAsync(5000);
+    http.deliver(json(500, { error: { code: 'internal_error', message: 'Error interno del servidor' } }));
+    await expect(p1).rejects.toBeInstanceOf(ApiError);
+    expect(http.onSlowEnd).toHaveBeenCalledTimes(1);
+
+    const network = slowClient();
+    const p2 = network.api.get('/api/me');
+    await vi.advanceTimersByTimeAsync(5000);
+    network.fail(new TypeError('Failed to fetch'));
+    await expect(p2).rejects.toMatchObject({ code: 'network_error' });
+    expect(network.onSlowEnd).toHaveBeenCalledTimes(1);
+  });
+});

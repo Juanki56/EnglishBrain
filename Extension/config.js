@@ -7,7 +7,10 @@
 self.EB = {
   DEFAULT_API_URL: 'http://localhost:3000',
   TOKEN_PATTERN: /^ebk_[A-Za-z0-9_-]{43}$/,
-  TIMEOUT_MS: 8000,
+  // El Backend gratuito de Render se duerme tras 15 min sin uso y tarda ~50 s
+  // en despertar: se espera hasta 70 s y, pasados 4 s, se avisa de la espera.
+  TIMEOUT_MS: 70000,
+  SLOW_MS: 4000,
 
   /** Valida y limpia la dirección del Backend ("https://api.x.com/" → "https://api.x.com"). */
   normalizeApiUrl(raw) {
@@ -80,6 +83,6 @@ self.EB = {
   },
 
   networkMessage(apiUrl) {
-    return `No se pudo conectar con el Backend (${apiUrl}). ¿Está encendido?`;
+    return `No se pudo conectar con el Backend (${apiUrl}). Comprueba que está encendido y que la dirección es correcta.`;
   },
 };

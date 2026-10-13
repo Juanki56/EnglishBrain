@@ -30,10 +30,12 @@ El Backend tiene que estar encendido (`npm run dev` en `Backend/`) para capturar
 
 Si cambia algún archivo de esta carpeta, pulsa el botón de recargar (↻) de EnglishBrain en `chrome://extensions`. No hace falta volver a instalarla ni a pegar el token.
 
-## Cuando la app esté desplegada
+## Con la app publicada (Render)
 
-- Cambia la **Dirección del Backend** en las opciones por la del servidor (p. ej. `https://englishbrain-api.onrender.com`) y pulsa **Guardar**. Chrome preguntará si permites el acceso a esa dirección: elige **Permitir**. `localhost` no lo pregunta porque viene permitido de serie.
-- El token sigue sirviendo (vive en tu cuenta de Supabase, no en tu PC).
+- Cambia la **Dirección del Backend** en las opciones por la de Render (p. ej. `https://englishbrain-api.onrender.com`) y pulsa **Guardar**. Chrome preguntará si permites el acceso a esa dirección: elige **Permitir**. `localhost` no lo pregunta porque viene permitido de serie.
+- El token sigue sirviendo (vive en tu cuenta de Supabase, no en tu PC). Así capturas aunque tu PC no tenga nada encendido.
+- **«Despertando el servidor…»**: el plan gratuito de Render apaga el Backend tras 15 min sin uso. Si el envío tarda más de 4 s verás ese aviso; la palabra se guarda en cuanto el servidor responde (suele tardar unos 50 s la primera vez). La extensión espera hasta 70 s antes de dar error. **Probar conexión** también puede tardar ese minuto.
+- Para volver a usar el Backend de tu PC, pon otra vez `http://localhost:3000`.
 - Para que otras personas la usen: pueden cargar esta carpeta igual que tú, o se publica en la Chrome Web Store (pago único de 5 USD, política de privacidad y revisión de Google). Cada persona genera **su propio token** en su perfil: sus palabras van solo a su Inbox.
 
 ## Seguridad y privacidad
@@ -74,7 +76,7 @@ Con el Backend y el Frontend encendidos y la extensión cargada:
 - [ ] Token vacío o `abc` → error bajo el campo, sin llamar al Backend.
 - [ ] Un token inventado con formato válido (`ebk_` + 43 caracteres) → «Token inválido o revocado».
 - [ ] El token real → «Conexión correcta…».
-- [ ] Con el Backend apagado → «No se pudo conectar con el Backend… ¿Está encendido?».
+- [ ] Con el Backend apagado → «No se pudo conectar con el Backend… Comprueba que está encendido y que la dirección es correcta».
 
 **Captura** (en un artículo real, p. ej. BBC News o Wikipedia en inglés)
 - [ ] Selecciona una expresión → clic derecho → **Enviar a mi Cerebro de Inglés** → aviso «… guardada en tu Inbox» abajo a la derecha (≈ 2 s) y ✓ verde en el icono. La página no se mueve ni se abre ninguna pestaña.

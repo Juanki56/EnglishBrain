@@ -253,6 +253,15 @@ Qué webs pueden llamar a la API desde un navegador (`middlewares/cors.ts`):
 - No se usan cookies (no hay `credentials`). Las peticiones sin `Origin` (curl, otros servidores) no se ven afectadas.
 - Para publicar el Frontend en otro dominio, añádelo a `CORS_ORIGINS` separado por comas.
 
+## En producción (Render)
+
+El Backend publicado corre en el plan gratuito de Render con [`render.yaml`](../render.yaml) (pasos completos en el [README raíz](../README.md#despliegue)):
+
+- Render ejecuta `npm ci && npm run build` (compila a `dist/`) y luego `npm start`, y comprueba la salud con `GET /api/health`.
+- Variables: `SUPABASE_URL` va en `render.yaml`; `SUPABASE_SECRET_KEY` y `CORS_ORIGINS` (dominio de Vercel + `http://localhost:5173`) se escriben en el panel de Render; `PORT` lo pone Render.
+- Se duerme tras 15 min sin uso y tarda ~50 s en despertar: la primera petición es lenta (la app y la extensión lo avisan).
+- Ver los registros: Render → servicio → **Logs** (ahí aparece `EnglishBrain API escuchando…` o el error de configuración si falta una variable).
+
 ## Problemas frecuentes
 
 | Síntoma | Solución |

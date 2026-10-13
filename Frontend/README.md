@@ -42,6 +42,20 @@ Al publicar la app se **añaden** las mismas rutas con el dominio real (sin borr
 
 > El correo gratuito de Supabase envía muy pocos correos por hora: si te registras varias veces seguidas probando, puede tardar. Antes de abrir la app a otras personas, configura un SMTP propio.
 
+## Publicación en Vercel
+
+La app publicada vive en Vercel (proyecto con **Root Directory = `Frontend`**; Vercel detecta Vite y ejecuta `npm run build` → `dist/`). Pasos completos en el [README raíz](../README.md#despliegue).
+
+| Variable (panel de Vercel → Settings → Environment Variables) | Valor en producción |
+|---|---|
+| `VITE_API_URL` | Dirección del Backend en Render, p. ej. `https://englishbrain-api.onrender.com` |
+| `VITE_SUPABASE_URL` | La misma que en local |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | La misma que en local (`sb_publishable_…`) |
+
+- Las variables `VITE_` se **incrustan al compilar**: si cambias una, vuelve a desplegar (Deployments → ⋯ → Redeploy).
+- [`vercel.json`](vercel.json) sirve `index.html` en cualquier ruta, para que recargar `/inbox` o abrir los enlaces de los correos (`/auth/callback`, `/reset-password`) no dé 404.
+- **«Despertando el servidor…»**: el Backend gratuito de Render se duerme tras 15 min sin uso. Si una petición tarda más de 4 s, aparece arriba esa franja (`components/ui/ServerWakeNotice.tsx`) hasta que responde; suele tardar unos 50 s la primera vez.
+
 ## Cuentas de usuario
 
 | Ruta | Pantalla |

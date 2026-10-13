@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router';
 import { AppLayout } from './components/ui/AppLayout';
 import { AuthLayout } from './components/ui/AuthLayout';
 import { GuestRoute, ProtectedRoute } from './components/ui/ProtectedRoute';
+import { ServerWakeNotice } from './components/ui/ServerWakeNotice';
 import { ALL_SECTIONS } from './navigation';
 import { AnkiSessionView } from './views/AnkiSessionView';
 import { AuthCallbackView } from './views/AuthCallbackView';
@@ -42,31 +43,35 @@ const VIEWS: Record<string, React.ReactNode> = {
 /** Rutas de la app. Cada grupo de tareas sustituye su pantalla provisional por la real. */
 export function App() {
   return (
-    <Routes>
-      {/* Cuenta: pantallas públicas */}
-      <Route element={<AuthLayout />}>
-        <Route element={<GuestRoute />}>
-          <Route path="/login" element={<LoginView />} />
-          <Route path="/register" element={<RegisterView />} />
-          <Route path="/register/check-email" element={<CheckEmailView />} />
-          <Route path="/forgot-password" element={<ForgotPasswordView />} />
+    <>
+      {/* Aviso «Despertando el servidor…» (Backend gratuito dormido) */}
+      <ServerWakeNotice />
+      <Routes>
+        {/* Cuenta: pantallas públicas */}
+        <Route element={<AuthLayout />}>
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<LoginView />} />
+            <Route path="/register" element={<RegisterView />} />
+            <Route path="/register/check-email" element={<CheckEmailView />} />
+            <Route path="/forgot-password" element={<ForgotPasswordView />} />
+          </Route>
+          {/* Destinos de los enlaces de los correos: funcionan con o sin sesión previa. */}
+          <Route path="/auth/callback" element={<AuthCallbackView />} />
+          <Route path="/reset-password" element={<ResetPasswordView />} />
         </Route>
-        {/* Destinos de los enlaces de los correos: funcionan con o sin sesión previa. */}
-        <Route path="/auth/callback" element={<AuthCallbackView />} />
-        <Route path="/reset-password" element={<ResetPasswordView />} />
-      </Route>
 
-      {/* App: requiere sesión */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/review" element={<AnkiSessionView />} />
-        <Route element={<AppLayout />}>
-          {ALL_SECTIONS.filter((section) => !FULLSCREEN.has(section.path)).map((section) => (
-            <Route key={section.path} path={section.path} element={VIEWS[section.path] ?? <ComingSoonView section={section} />} />
-          ))}
-          {import.meta.env.DEV && <Route path="/dev/ui" element={<UiKitView />} />}
-          <Route path="*" element={<NotFoundView />} />
+        {/* App: requiere sesión */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/review" element={<AnkiSessionView />} />
+          <Route element={<AppLayout />}>
+            {ALL_SECTIONS.filter((section) => !FULLSCREEN.has(section.path)).map((section) => (
+              <Route key={section.path} path={section.path} element={VIEWS[section.path] ?? <ComingSoonView section={section} />} />
+            ))}
+            {import.meta.env.DEV && <Route path="/dev/ui" element={<UiKitView />} />}
+            <Route path="*" element={<NotFoundView />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </>
   );
 }

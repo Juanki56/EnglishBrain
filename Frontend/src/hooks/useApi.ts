@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { type ApiClient, createApiClient } from '../lib/api';
 import { env } from '../lib/env';
+import { serverWake } from '../lib/serverWake';
 import { supabase } from '../lib/supabase';
 import { useSession } from './useSession';
 
@@ -17,6 +18,9 @@ export function useApi(): ApiClient {
         // getSession devuelve un token vigente (lo refresca si hace falta).
         getAccessToken: async () => (await supabase.auth.getSession()).data.session?.access_token ?? null,
         onUnauthorized: () => void expireSession(),
+        // Aviso «Despertando el servidor…» si una petición tarda más de 4 s.
+        onSlowStart: serverWake.start,
+        onSlowEnd: serverWake.end,
       }),
     [expireSession],
   );

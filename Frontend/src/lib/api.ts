@@ -28,8 +28,19 @@ export interface ApiClientOptions {
   getAccessToken: () => Promise<string | null>;
   /** Se llama ante un 401 (sesión caducada o cerrada). */
   onUnauthorized?: () => void;
+  /**
+   * Una petición lleva más de `slowAfterMs` sin terminar (el servidor gratuito
+   * puede estar despertando). `onSlowEnd` se llama cuando esa petición termina,
+   * con éxito, error o cancelación.
+   */
+  onSlowStart?: () => void;
+  onSlowEnd?: () => void;
+  slowAfterMs?: number;
   fetchImpl?: typeof fetch;
 }
+
+/** A partir de cuánto una petición se considera lenta (design D3 de deploy-render-vercel). */
+export const SLOW_REQUEST_MS = 4000;
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -43,8 +54,32 @@ export interface RequestOptions {
 
 export type ApiClient = ReturnType<typeof createApiClient>;
 
-export function createApiClient({ baseUrl, getAccessToken, onUnauthorized, fetchImpl = fetch }: ApiClientOptions) {
-  async function request<T>(path: string, { method = 'GET', body, formData, query, signal }: RequestOptions = {}): Promise<T> {
+export function createApiClient({
+  baseUrl,
+  getAccessToken,
+  onUnauthorized,
+  onSlowStart,
+  onSlowEnd,
+  slowAfterMs = SLOW_REQUEST_MS,
+  fetchImpl = fetch,
+}: ApiClientOptions) {
+  async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+    let slow = false;
+    const timer = onSlowStart
+      ? setTimeout(() => {
+          slow = true;
+          onSlowStart();
+        }, slowAfterMs)
+      : undefined;
+    try {
+      return await send<T>(path, options);
+    } finally {
+      clearTimeout(timer);
+      if (slow) onSlowEnd?.();
+    }
+  }
+
+  async function send<T>(path: string, { method = 'GET', body, formData, query, signal }: RequestOptions): Promise<T> {
     const url = new URL(baseUrl + path);
     for (const [key, value] of Object.entries(query ?? {})) {
       if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, String(value));

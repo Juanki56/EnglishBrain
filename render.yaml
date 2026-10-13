@@ -1,0 +1,31 @@
+# Blueprint de Render: publica el Backend de EnglishBrain (design D1 de deploy-render-vercel).
+# Render lo lee al crear el servicio con New → Blueprint. Los secretos NO van aquí:
+# las variables con `sync: false` se escriben en el panel de Render.
+services:
+  - type: web
+    name: englishbrain-api
+    runtime: node
+    plan: free
+    # La más cercana al proyecto de Supabase (Supabase → Settings → General → Region).
+    # Cambiarla después exige recrear el servicio.
+    region: virginia
+    rootDir: Backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    # Solo se redespliega cuando cambia el Backend.
+    buildFilter:
+      paths:
+        - Backend/**
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: SUPABASE_URL
+        value: https://ujipnxeaipreyjcnoean.supabase.co
+      # Secret key de Supabase (sb_secret_…): se escribe en el panel, nunca aquí.
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      # Dominio de Vercel + http://localhost:5173, separados por coma.
+      - key: CORS_ORIGINS
+        sync: false
